@@ -4,7 +4,7 @@
 *
 * Loading test fixtures is as easy as ABC
 *
-* Copyright (C) 2018-2019 University Of Helsinki (The National Library Of Finland)
+* Copyright (C) 2019 University Of Helsinki (The National Library Of Finland)
 *
 * This file is part of fixura-js
 *
