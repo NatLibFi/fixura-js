@@ -3,7 +3,7 @@ type: docker
 name: default
 
 environment:
-  FOO: 'bar'
+  FOO: bar
 
 steps:
   - name: foo
