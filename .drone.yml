@@ -16,12 +16,12 @@ steps:
   - name: test
     image: busybox
     commands:
-      - echo jee
+      - echo ${NODE_VERSION}
 
-#  - name: audit
-#    image: node:${NODE_VERSION}
-#    commands:
-#      - npm audit --package-lock-only --audit-level=moderate
+  - name: audit
+    image: node:${NODE_VERSION}
+    commands:
+      - npm audit --package-lock-only --audit-level=moderate
 #
 #  - name: install
 #    image: node:${NODE_VERSION}
