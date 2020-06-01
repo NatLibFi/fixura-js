@@ -30,71 +30,80 @@ import path from 'path';
 import fs from 'fs';
 
 export const READERS = {
-	TEXT: 1,
-	JSON: 2,
-	STREAM: 3
+  TEXT: 1,
+  JSON: 2,
+  STREAM: 3
 };
 
-export default function ({root, reader = READERS.TEXT, failWhenNotFound = true}) {
-	return {getFixture};
+export default function (...args) {
+  const defaultOptions = {
+    reader: READERS.TEXT,
+    failWhenNotFound: true
+  };
 
-	function getFixture(args) {
-		const defaultReader = reader;
-		const {components, readerType} = parseArgs();
-		const read = getReader(readerType);
-		const filePath = path.join.apply(undefined, root.concat(components));
+  const {root, reader: defaultReader, failWhenNotFound = true} = parseArgs();
+  return {getFixture};
 
-		try {
-			return read(filePath);
-		} catch (err) {
-			if (err.code && err.code === 'ENOENT' && failWhenNotFound) {
-				throw new Error(`Couldn't retrieve test fixture ${filePath}`);
-			}
-		}
+  function parseArgs() {
+    if (args.length === 1 && typeof args[0] === 'object' && Array.isArray(args[0]) === false) {
+      return {...defaultOptions, ...args[0]};
+    }
 
-		function parseArgs() {
-			/*
-						If (args.length === 0 && typeof args === 'object') {
-				const {reader, components} = args;
-				return {readerType: reader ? reader : defaultReader, components};
-			}
-			*/
-			if (!Array.isArray(args)) {
-				const {reader, components} = args;
-				return {readerType: reader ? reader : defaultReader, components};
-			}
+    return {...defaultOptions, root: args};
+  }
 
-			return {components: args, readerType: defaultReader};
-		}
+  function getFixture(...args) {
+    const {components, reader: readerType} = parseArgs();
+    const read = getReader(readerType);
+    const filePath = path.join(...root, ...components);
 
-		function getReader(context) {
-			if (typeof context === 'function') {
-				return context;
-			}
+    try {
+      return read(filePath);
+    } catch (err) {
+      if (err.code && err.code === 'ENOENT' && failWhenNotFound) { // eslint-disable-line functional/no-conditional-statement
+        throw new Error(`Couldn't retrieve test fixture ${filePath}`);
+      }
+    }
 
-			switch (context) {
-				case READERS.TEXT:
-					return readText;
-				case READERS.JSON:
-					return readJson;
-				case READERS.STREAM:
-					return readStream;
-				default:
-					throw new Error(`Unsupported reader type: ${context}`);
-			}
-		}
+    function parseArgs() {
+      if (args.length === 1 && typeof args[0] === 'object' && Array.isArray(args[0]) === false) {
+        return {reader: defaultReader, ...args[0]};
+      }
 
-		function readText(filePath) {
-			return fs.readFileSync(filePath, 'utf8');
-		}
+      return {reader: defaultReader, components: args};
+    }
 
-		function readJson(filePath) {
-			const data = fs.readFileSync(filePath, 'utf8');
-			return JSON.parse(data);
-		}
+    function getReader(context) {
+      if (typeof context === 'function') {
+        return context;
+      }
 
-		function readStream(filePath) {
-			return fs.createReadStream(filePath);
-		}
-	}
+      if (context === READERS.TEXT) {
+        return readText;
+      }
+
+      if (context === READERS.JSON) {
+        return readJson;
+      }
+
+      if (context === READERS.STREAM) {
+        return readStream;
+      }
+
+      throw new Error(`Unsupported reader type: ${context}`);
+    }
+
+    function readText(filePath) {
+      return fs.readFileSync(filePath, 'utf8');
+    }
+
+    function readJson(filePath) {
+      const data = fs.readFileSync(filePath, 'utf8');
+      return JSON.parse(data);
+    }
+
+    function readStream(filePath) {
+      return fs.createReadStream(filePath);
+    }
+  }
 }
