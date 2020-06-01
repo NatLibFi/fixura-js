@@ -16,8 +16,8 @@ steps:
   - name: test
     image: busybox
     commands:
-      - echo $NPM_CONFIG_IGNORE_SCRIPTS
-      - echo ${NODE_VERSION}
+      - echo ${NPM_CONFIG_IGNORE_SCRIPTS}
+      - echo $${NODE_VERSION}
 
 #  - name: audit
 #    image: node:${NODE_VERSION}
