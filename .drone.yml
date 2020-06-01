@@ -19,40 +19,40 @@ steps:
     commands:
       - npm audit --package-lock-only --audit-level=moderate
 
-  - name: install
-    image: node:${NODE_VERSION}
-    commands:
-      - npm ci
-
-  - name: test
-    image: node:${NODE_VERSION}
-    commands:
-      - npm test
-
-  - name: check-coverage
-    image: node:${NODE_VERSION}
-    commands:
-      - npm run check-coverage
-
-  - name: build
-    image: node:${NODE_VERSION}
-    commands:
-      - npm run build
-      - npm ci --production
-
-  - name: static-security-scan
-    image: quay.io/natlibfi/nodejsscan
-    commands:
-      - python /usr/src/app/cli.py -d dist
-  
-  - name: npm
-    image: plugins/npm
-    settings:
-      registry: 'https://registry.npmjs.org/'
-      token:
-        from_secret: npm_token
-    when:
-      event: tag   
+#  - name: install
+#    image: node:${NODE_VERSION}
+#    commands:
+#      - npm ci
+#
+#  - name: test
+#    image: node:${NODE_VERSION}
+#    commands:
+#      - npm test
+#
+#  - name: check-coverage
+#    image: node:${NODE_VERSION}
+#    commands:
+#      - npm run check-coverage
+#
+#  - name: build
+#    image: node:${NODE_VERSION}
+#    commands:
+#      - npm run build
+#      - npm ci --production
+#
+#  - name: static-security-scan
+#    image: quay.io/natlibfi/nodejsscan
+#    commands:
+#      - python /usr/src/app/cli.py -d dist
+#  
+#  - name: npm
+#    image: plugins/npm
+#    settings:
+#      registry: 'https://registry.npmjs.org/'
+#      token:
+#        from_secret: npm_token
+#    when:
+#      event: tag   
 ---
 kind: secret
 name: npm_token
