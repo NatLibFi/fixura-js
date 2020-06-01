@@ -15,9 +15,11 @@ environment:
 steps:
   - name: test
     image: busybox
+    environment:
+      NPM_CONFIG_IGNORE_SCRIPTS: true    
     commands:
       - echo ${NPM_CONFIG_IGNORE_SCRIPTS}
-      - echo $${NODE_VERSION}
+      - echo ${NODE_VERSION}
 
 #  - name: audit
 #    image: node:${NODE_VERSION}
