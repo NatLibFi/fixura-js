@@ -54,7 +54,7 @@ export default function (...args) {
 
   function getFixture(...args) {
     const {components, reader: readerType} = parseArgs();
-		const read = getReader(readerType);
+    const read = getReader(readerType);
     const filePath = path.join(...root, ...components);
 
     try {
@@ -67,7 +67,7 @@ export default function (...args) {
 
     function parseArgs() {
       if (args.length === 1 && typeof args[0] === 'object' && Array.isArray(args[0]) === false) {
-        return {reader: defaultReader, ...args[0]};        
+        return {reader: defaultReader, ...args[0]};
       }
 
       return {reader: defaultReader, components: args};
