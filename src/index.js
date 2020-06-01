@@ -47,7 +47,7 @@ export default function ({root, reader = READERS.TEXT, failWhenNotFound = true})
 		try {
 			return read(filePath);
 		} catch (err) {
-			if (failWhenNotFound) {
+			if (err.code && err.code === 'ENOENT' && failWhenNotFound) {
 				throw new Error(`Couldn't retrieve test fixture ${filePath}`);
 			}
 		}
