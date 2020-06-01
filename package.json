@@ -31,8 +31,8 @@
 		"check-deps": "npm-check;exit 0",
 		"lint": "eslint --fix src",
 		"test:base": "cross-env NODE_ENV=test nyc mocha --require @babel/register",
-		"test": "npm run lint && npm run test:base -- src/*.spec.js && npm run coverage",
-		"coverage": "nyc check-coverage --per-file",
+		"test": "npm run lint && npm run test:base -- src/*.spec.js && npm run check-coverage",
+		"check-coverage": "nyc check-coverage --per-file",
 		"build:transpile": "babel src --source-maps --delete-dir-on-start --out-dir=dist",
 		"build": "npm run build:transpile && npm run check-deps",
 		"watch": "cross-env DEBUG=1 NODE_ENV=test nodemon -w src --exec 'npm test'"
