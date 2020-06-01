@@ -9,8 +9,8 @@ trigger:
     - tag
 
 environment:
-  NPM_CONFIG_IGNORE_SCRIPTS: true
-  NODE_VERSION: 12
+  NPM_CONFIG_IGNORE_SCRIPTS: 'true'
+  NODE_VERSION: '12'
 
 steps:
   - name: test
