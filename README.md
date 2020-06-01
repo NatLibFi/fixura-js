@@ -1,4 +1,4 @@
-# Loading test fixtures is as easy as ABC [![NPM Version](https://img.shields.io/npm/v/@natlibfi/fixura.svg)](https://npmjs.org/package/@natlibfi/fixura) [![Build Status](https://travis-ci.org/NatLibFi/fixura-js.svg)](https://travis-ci.org/NatLibFi/fixura-js) [![Test Coverage](https://codeclimate.com/github/NatLibFi/fixura-js/badges/coverage.svg)](https://codeclimate.com/github/NatLibFi/fixura-js/coverage)
+# Loading test fixtures is as easy as ABC [![NPM Version](https://img.shields.io/npm/v/@natlibfi/fixura.svg)](https://npmjs.org/package/@natlibfi/fixura)
 
 Loading test fixtures is as easy as ABC with Fixura.
 
@@ -6,13 +6,13 @@ Loading test fixtures is as easy as ABC with Fixura.
 ## ES modules
 ```js
 import fixturesFactory from '@natlibfi/fixura';
-const {getFixture} = fixturesFactory({root: [__dirname, '...', 'test-fixtures']});
+const {getFixture} = fixturesFactory(__dirname, '...', 'test-fixtures']);
 const fixture = getFixture('foo.txt');
 ```
 ## Node.js require
 ```js
 const {default: fixturesFactory} from '@natlibfi/fixura';
-const {getFixture} = fixturesFactory({root: [__dirname, '...', 'test-fixtures']});
+const {getFixture} = fixturesFactory(__dirname, '...', 'test-fixtures');
 const fixture = getFixture('foo.txt');
 ```
 # Configuration
@@ -53,6 +53,6 @@ The reader function takes one string argument which is an absolute path to the f
 
 ## License and copyright
 
-Copyright (c) 2019 **University Of Helsinki (The National Library Of Finland)**
+Copyright (c) 2019-2020 **University Of Helsinki (The National Library Of Finland)**
 
 This project's source code is licensed under the terms of **GNU Lesser General Public License Version 3** or any later version.

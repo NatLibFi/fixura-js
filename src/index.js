@@ -30,71 +30,80 @@ import path from 'path';
 import fs from 'fs';
 
 export const READERS = {
-	TEXT: 1,
-	JSON: 2,
-	STREAM: 3
+  TEXT: 1,
+  JSON: 2,
+  STREAM: 3
 };
 
-export default function ({root, reader = READERS.TEXT, failWhenNotFound = true}) {
-	return {getFixture};
+export default function (...args) {
+  const defaultOptions = {
+    reader: READERS.TEXT,
+    failWhenNotFound: true
+  };
 
-	function getFixture(args) {
-		const defaultReader = reader;
-		const {components, readerType} = parseArgs();
+  const {root, reader: defaultReader, failWhenNotFound = true} = parseArgs();
+  return {getFixture};
+
+  function parseArgs() {
+    if (args.length === 1 && typeof args[0] === 'object' && Array.isArray(args[0]) === false) {
+      return {...defaultOptions, ...args[0]};
+    }
+
+    return {...defaultOptions, root: args};
+  }
+
+  function getFixture(...args) {
+    const {components, reader: readerType} = parseArgs();
 		const read = getReader(readerType);
-		const filePath = path.join.apply(undefined, root.concat(components));
+    const filePath = path.join(...root, ...components);
 
-		try {
-			return read(filePath);
-		} catch (err) {
-			if (err.code && err.code === 'ENOENT' && failWhenNotFound) {
-				throw new Error(`Couldn't retrieve test fixture ${filePath}`);
-			}
-		}
+    try {
+      return read(filePath);
+    } catch (err) {
+      if (err.code && err.code === 'ENOENT' && failWhenNotFound) { // eslint-disable-line functional/no-conditional-statement
+        throw new Error(`Couldn't retrieve test fixture ${filePath}`);
+      }
+    }
 
-		function parseArgs() {
-			/*
-						If (args.length === 0 && typeof args === 'object') {
-				const {reader, components} = args;
-				return {readerType: reader ? reader : defaultReader, components};
-			}
-			*/
-			if (!Array.isArray(args)) {
-				const {reader, components} = args;
-				return {readerType: reader ? reader : defaultReader, components};
-			}
+    function parseArgs() {
+      if (args.length === 1 && typeof args[0] === 'object' && Array.isArray(args[0]) === false) {
+        return {reader: defaultReader, ...args[0]};        
+      }
 
-			return {components: args, readerType: defaultReader};
-		}
+      return {reader: defaultReader, components: args};
+    }
 
-		function getReader(context) {
-			if (typeof context === 'function') {
-				return context;
-			}
+    function getReader(context) {
+      if (typeof context === 'function') {
+        return context;
+      }
 
-			switch (context) {
-				case READERS.TEXT:
-					return readText;
-				case READERS.JSON:
-					return readJson;
-				case READERS.STREAM:
-					return readStream;
-				default:
-					throw new Error(`Unsupported reader type: ${context}`);
-			}
-		}
+      if (context === READERS.TEXT) {
+        return readText;
+      }
 
-		function readText(filePath) {
-			return fs.readFileSync(filePath, 'utf8');
-		}
+      if (context === READERS.JSON) {
+        return readJson;
+      }
 
-		function readJson(filePath) {
-			const data = fs.readFileSync(filePath, 'utf8');
-			return JSON.parse(data);
-		}
+      if (context === READERS.STREAM) {
+        return readStream;
+      }
 
-		function readStream(filePath) {
-			return fs.createReadStream(filePath);
-		}
-	}
+      throw new Error(`Unsupported reader type: ${context}`);
+    }
+
+    function readText(filePath) {
+      return fs.readFileSync(filePath, 'utf8');
+    }
+
+    function readJson(filePath) {
+      const data = fs.readFileSync(filePath, 'utf8');
+      return JSON.parse(data);
+    }
+
+    function readStream(filePath) {
+      return fs.createReadStream(filePath);
+    }
+  }
 }
