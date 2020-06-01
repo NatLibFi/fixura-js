@@ -27,7 +27,7 @@
 */
 
 import fs from 'fs';
-import path from 'path';
+import {join as joinPath} from 'path';
 import {expect} from 'chai';
 import fixturesFactory, {READERS} from './index';
 
@@ -77,7 +77,7 @@ describe('index', () => {
 			expect(fixture).to.equal(expectedFixture);
 		});
 
-		it('Should use a fixture specific reader', (index = '4') => {
+		it('Should use a fixture-specific reader', (index = '4') => {
 			const fixturePath = [index, 'file.json'];
 			const fixture = JSON.parse(readFile(fixturePath));
 			const {getFixture} = fixturesFactory({root: FIXTURES_PATH});
@@ -96,7 +96,7 @@ describe('index', () => {
 			expect(getFixture(fixturePath)).to.eql(expectedFixture);
 		});
 
-		it('Should because of an unsupported reader type', () => {
+		it('Should throw because of an unsupported reader type', () => {
 			const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: 'foo'});
 			expect(() => {
 				getFixture([]);
@@ -104,8 +104,21 @@ describe('index', () => {
 		});
 
 		function readFile(pathComponents) {
-			const filePath = path.join.apply(undefined, FIXTURES_PATH.concat(pathComponents));
+			const filePath = joinPath(...FIXTURES_PATH, ...pathComponents);
 			return fs.readFileSync(filePath, 'utf8');
 		}
+
+		it('Should throw because the fixture could not be found', () => {
+			const {getFixture} = fixturesFactory({root: FIXTURES_PATH});
+
+			expect(() => {
+				getFixture(['foo']);
+			}).to.throw(Error, new RegExp(`^Couldn't retrieve test fixture ${joinPath(...FIXTURES_PATH, 'foo')}$`));
+		});
+
+		it('Should not throw when a fixture is not found because explicitly requested', () => {
+			const {getFixture} = fixturesFactory({root: FIXTURES_PATH, failWhenNotFound: false});
+			expect(getFixture(['foo'])).to.equal(undefined);
+		});
 	});
 });

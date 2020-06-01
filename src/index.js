@@ -35,17 +35,30 @@ export const READERS = {
 	STREAM: 3
 };
 
-export default function ({root, reader = READERS.TEXT}) {
+export default function ({root, reader = READERS.TEXT, failWhenNotFound = true}) {
 	return {getFixture};
 
 	function getFixture(args) {
 		const defaultReader = reader;
 		const {components, readerType} = parseArgs();
 		const read = getReader(readerType);
+		const filePath = path.join.apply(undefined, root.concat(components));
 
-		return read(path.join.apply(undefined, root.concat(components)));
+		try {
+			return read(filePath);
+		} catch (err) {
+			if (failWhenNotFound) {
+				throw new Error(`Couldn't retrieve test fixture ${filePath}`);
+			}
+		}
 
 		function parseArgs() {
+			/*
+						If (args.length === 0 && typeof args === 'object') {
+				const {reader, components} = args;
+				return {readerType: reader ? reader : defaultReader, components};
+			}
+			*/
 			if (!Array.isArray(args)) {
 				const {reader, components} = args;
 				return {readerType: reader ? reader : defaultReader, components};
