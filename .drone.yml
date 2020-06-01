@@ -13,12 +13,16 @@ environment:
   NODE_VERSION: 12
 
 steps:
-
-  - name: audit
-    image: node:${NODE_VERSION}
+  - name: test
+    image: busybox
     commands:
-      - npm audit --package-lock-only --audit-level=moderate
+      - echo jee
 
+#  - name: audit
+#    image: node:${NODE_VERSION}
+#    commands:
+#      - npm audit --package-lock-only --audit-level=moderate
+#
 #  - name: install
 #    image: node:${NODE_VERSION}
 #    commands:
