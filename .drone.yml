@@ -29,7 +29,7 @@ steps:
   - name: check-coverage
     image: node:12
     commands:
-      - npm run check-coverage
+      - npm run coverage
 
   - name: build
     image: node:12
