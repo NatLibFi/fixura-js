@@ -9,13 +9,14 @@ trigger:
     - tag
 
 environment:
-  NPM_CONFIG_IGNORE_SCRIPTS: 'true'
-  NODE_VERSION: '12'
+  NPM_CONFIG_IGNORE_SCRIPTS: true
+  NODE_VERSION: 12
 
 steps:
   - name: test
     image: busybox
     commands:
+      - echo $NPM_CONFIG_IGNORE_SCRIPTS
       - echo ${NODE_VERSION}
 
 #  - name: audit
