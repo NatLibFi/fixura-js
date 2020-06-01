@@ -1,19 +1,59 @@
 kind: pipeline
-name: default
-steps:
-- name: build
-  image: node:8
-  commands:
-  - npm install
-  - npm test
-  - npm run build:transpile
-- name: npm
-  image: plugins/npm
-  settings:
-    token:
-      from_secret: npm_token
-  when:
-    event: tag
+type: docker
+name: Default
+
 trigger:
-  event: [push, tag]    
+  event:
+    - push
+    - tag
+
+environment:
+  NPM_CONFIG_IGNORE_SCRIPTS: true
+  NODE_VERSION: 12
+
+steps:
+
+  - name: audit
+    image: node:${NODE_VERSION}
+    commands:
+      - npm audit --package-lock-only --audit-level=moderate
+
+  - name: install
+    image: node:${NODE_VERSION}
+    commands:
+      - npm ci
+
+  - name: test
+    image: node:${NODE_VERSION}
+    commands:
+      - npm test
+
+  - name: check-coverage
+    image: node:${NODE_VERSION}
+    commands:
+      - npm run check-coverage
+
+  - name: build
+    image: node:${NODE_VERSION}
+    commands:
+      - npm run build
+      - npm ci --production
+
+  - name: static-security-scan
+    image: quay.io/natlibfi/nodejsscan
+    commands:
+      - python /usr/src/app/cli.py -d dist
   
+  - name: npm
+    image: plugins/npm
+    settings:
+      registry: 'https://registry.npmjs.org/'
+      token:
+        from_secret: npm_token
+    when:
+      event: tag   
+---
+kind: secret
+name: npm_token
+data: ccugi9SLiTChs9y10jd/9Ul1lT/VbdqBtc1ce8SmbCkhMcBofJssY0LBfevzT3yGQLa4cm4bNTVuyVGWI7q4Ww==
+
