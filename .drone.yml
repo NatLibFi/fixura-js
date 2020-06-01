@@ -8,5 +8,8 @@ environment:
 steps:
   - name: foo
     image: busybox
+    environment:
+      BAR: foo
     commands:
       - echo $FOO
+      - echo $BAR
