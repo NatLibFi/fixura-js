@@ -103,11 +103,6 @@ describe('index', () => {
       }).to.throw(Error, /^Unsupported reader type: foo$/u);
     });
 
-    function readFile(...pathComponents) {
-      const filePath = joinPath(...FIXTURES_PATH, ...pathComponents);
-      return fs.readFileSync(filePath, 'utf8');
-    }
-
     it('Should throw because the fixture could not be found', () => {
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH});
 
@@ -121,4 +116,27 @@ describe('index', () => {
       expect(getFixture('foo')).to.equal(undefined);
     });
   });
+
+  describe('#getFixtures', () => {
+    it('Should get fixtures with regular expression', (index = '6') => {
+      const fixturePath = [index, 'file.txt'];
+      const fixture = readFile(...fixturePath);
+      const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
+
+      expect(getFixtures(index, /^file/u)).to.eql([fixture]);
+    });
+
+    it('Should get fixtures without regular expression', (index = '7') => {
+      const fixturePath = [index, 'file.txt'];
+      const fixture = readFile(...fixturePath);
+      const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
+
+      expect(getFixtures(...fixturePath)).to.eql([fixture]);
+    });
+  });
+
+  function readFile(...pathComponents) {
+    const filePath = joinPath(...FIXTURES_PATH, ...pathComponents);
+    return fs.readFileSync(filePath, 'utf8');
+  }
 });

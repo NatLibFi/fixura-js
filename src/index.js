@@ -26,8 +26,8 @@
 *
 */
 
-import path from 'path';
-import fs from 'fs';
+import {join as joinPath} from 'path';
+import {readFileSync, readdirSync, createReadStream} from 'fs';
 
 export const READERS = {
   TEXT: 1,
@@ -41,10 +41,10 @@ export default function (...args) {
     failWhenNotFound: true
   };
 
-  const {root, reader: defaultReader, failWhenNotFound = true} = parseArgs();
-  return {getFixture};
+  const {root, reader: defaultReader, failWhenNotFound = true} = parseDefaultArgs();
+  return {getFixture, getFixtures};
 
-  function parseArgs() {
+  function parseDefaultArgs() {
     if (args.length === 1 && typeof args[0] === 'object' && Array.isArray(args[0]) === false) {
       return {...defaultOptions, ...args[0]};
     }
@@ -53,27 +53,49 @@ export default function (...args) {
   }
 
   function getFixture(...args) {
-    const {components, reader: readerType} = parseArgs();
-    const read = getReader(readerType);
-    const filePath = path.join(...root, ...components);
+    const {components, reader: readerType} = parseArgs(args);
+    const read = createReader(readerType);
+    const filePath = joinPath(...root, ...components);
+    return read(filePath);
+  }
 
-    try {
-      return read(filePath);
-    } catch (err) {
-      if (err.code && err.code === 'ENOENT' && failWhenNotFound) { // eslint-disable-line functional/no-conditional-statement
-        throw new Error(`Couldn't retrieve test fixture ${filePath}`);
-      }
+  function getFixtures(...args) {
+    const {components, reader: readerType} = parseArgs(args);
+    const read = createReader(readerType);
+    const [fileComponent] = components.slice(-1);
+
+    if (fileComponent instanceof RegExp) {
+      const dir = joinPath(...root, ...components.slice(0, -1));
+      return readdirSync(dir)
+        .filter(fn => fileComponent.test(fn))
+        .map(fn => read(joinPath(dir, fn)));
     }
 
-    function parseArgs() {
-      if (args.length === 1 && typeof args[0] === 'object' && Array.isArray(args[0]) === false) {
-        return {reader: defaultReader, ...args[0]};
-      }
+    return [read(joinPath(...root, ...components))];
+  }
 
-      return {reader: defaultReader, components: args};
+  function parseArgs(args) {
+    if (args.length === 1 && typeof args[0] === 'object' && args[0] instanceof RegExp === false && Array.isArray(args[0]) === false) {
+      return {reader: defaultReader, ...args[0]};
     }
 
-    function getReader(context) {
+    return {reader: defaultReader, components: args};
+  }
+
+  function createReader(context) {
+    const readCallback = generateReader();
+    return filePath => {
+      try {
+        return readCallback(filePath);
+      } catch (err) {
+        if (err.code && err.code === 'ENOENT' && failWhenNotFound) { // eslint-disable-line functional/no-conditional-statement
+          throw new Error(`Couldn't retrieve test fixture ${filePath}`);
+        }
+      }
+    };
+
+    function generateReader() {
+
       if (typeof context === 'function') {
         return context;
       }
@@ -94,16 +116,16 @@ export default function (...args) {
     }
 
     function readText(filePath) {
-      return fs.readFileSync(filePath, 'utf8');
+      return readFileSync(filePath, 'utf8');
     }
 
     function readJson(filePath) {
-      const data = fs.readFileSync(filePath, 'utf8');
+      const data = readFileSync(filePath, 'utf8');
       return JSON.parse(data);
     }
 
     function readStream(filePath) {
-      return fs.createReadStream(filePath);
+      return createReadStream(filePath);
     }
   }
 }

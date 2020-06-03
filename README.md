@@ -8,12 +8,18 @@ Loading test fixtures is as easy as ABC with Fixura.
 import fixturesFactory from '@natlibfi/fixura';
 const {getFixture} = fixturesFactory(__dirname, '...', 'test-fixtures']);
 const fixture = getFixture('foo.txt');
+
+// Get multiple files using regular expressions
+const fixtures = getFixtures(/.+\.txt/u);
 ```
 ## Node.js require
 ```js
 const {default: fixturesFactory} from '@natlibfi/fixura';
 const {getFixture} = fixturesFactory(__dirname, '...', 'test-fixtures');
 const fixture = getFixture('foo.txt');
+
+// Get multiple files using regular expressions
+const fixtures = getFixtures(/.+\.txt/u);
 ```
 # Configuration
 ## Readers

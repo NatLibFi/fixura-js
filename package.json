@@ -18,7 +18,7 @@
 		"url": "git@github.com:natlibfi/fixura-js.git"
 	},
 	"license": "LGPL-3.0+",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"main": "./dist/index.js",
 	"engines": {
 		"node": ">=12"
@@ -33,7 +33,7 @@
 		"test": "npm run lint && npm run test:base -- src/*.spec.js src/**/*.spec.js && npm run coverage",
 		"test:dev": "npm run lint:dev && npm run test:base -- src/*.spec.js src/**/*.spec.js && npm run coverage",
 		"coverage": "nyc check-coverage --per-file",
-		"build": "babel src --source-maps --copy-files --delete-dir-on-start --out-dir=dist --minified",
+		"build": "babel src --source-maps --copy-files --delete-dir-on-start --out-dir=dist",
 		"watch:test": "cross-env DEBUG=1 NODE_ENV=test nodemon -w src --exec 'npm run test:dev'"
 	},
 	"dependencies": {
