@@ -56,6 +56,16 @@ getFixture({components: ['foo', 'bar.txt'], reader: filePath => doSomething()});
 ```
 The reader function takes one string argument which is an absolute path to the fixture file. The function can return any value which the test case can then use as appropriate.
 
+## failWhenNotFound
+Set **failWhenNotFound** to false to return undefined and to prevent throwing if a fixture file is not found:
+```
+const {getFixture} = fixturesFactory({
+    rootPath: [__dirname, '..', 'test-fixtures'],
+    failWhenNotFound: false
+});
+
+const foo = getFixture('foo', 'bar.txt'); // undefined
+```
 
 ## License and copyright
 
