@@ -93,7 +93,7 @@ export default function (...args) {
             throw new Error(`Couldn't retrieve test fixture ${filePath}`);
           }
 
-
+          return;
         }
 
         throw err;
