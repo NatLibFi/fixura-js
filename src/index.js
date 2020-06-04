@@ -88,9 +88,15 @@ export default function (...args) {
       try {
         return readCallback(filePath);
       } catch (err) {
-        if (err.code && err.code === 'ENOENT' && failWhenNotFound) { // eslint-disable-line functional/no-conditional-statement
-          throw new Error(`Couldn't retrieve test fixture ${filePath}`);
+        if (err.code && err.code === 'ENOENT') {
+          if (failWhenNotFound) { // eslint-disable-line functional/no-conditional-statement
+            throw new Error(`Couldn't retrieve test fixture ${filePath}`);
+          }
+
+
         }
+
+        throw err;
       }
     };
 

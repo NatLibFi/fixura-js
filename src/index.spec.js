@@ -32,12 +32,12 @@ import {expect} from 'chai';
 import fixturesFactory, {READERS} from './index';
 
 describe('index', () => {
-  const FIXTURES_PATH = [__dirname, '..', 'test-fixtures'];
-
   describe('#getFixture', () => {
+    const FIXTURES_PATH = [__dirname, '..', 'test-fixtures', 'getFixture'];
+
     it('Should get a fixture using the default reader', (index = '0') => {
       const fixturePath = [index, 'file.txt'];
-      const fixture = readFile(...fixturePath);
+      const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixture} = fixturesFactory(...FIXTURES_PATH);
 
       expect(getFixture(...fixturePath)).to.equal(fixture);
@@ -45,7 +45,7 @@ describe('index', () => {
 
     it('Should get a fixture using the text reader', (index = '1') => {
       const fixturePath = [index, 'file.txt'];
-      const fixture = readFile(...fixturePath);
+      const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.TEXT});
 
       expect(getFixture(...fixturePath)).to.equal(fixture);
@@ -53,7 +53,7 @@ describe('index', () => {
 
     it('Should get a fixture using the json reader', (index = '2') => {
       const fixturePath = [index, 'file.json'];
-      const fixture = JSON.parse(readFile(...fixturePath));
+      const fixture = JSON.parse(readFile(...FIXTURES_PATH, ...fixturePath));
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.JSON});
 
       expect(getFixture(...fixturePath)).to.eql(fixture);
@@ -61,7 +61,7 @@ describe('index', () => {
 
     it('Should get a fixture using the stream reader', async (index = '3') => {
       const fixturePath = [index, 'file.txt'];
-      const expectedFixture = readFile(...fixturePath);
+      const expectedFixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.STREAM});
 
       const stream = getFixture(...fixturePath);
@@ -79,7 +79,7 @@ describe('index', () => {
 
     it('Should use a fixture-specific reader', (index = '4') => {
       const fixturePath = [index, 'file.json'];
-      const fixture = JSON.parse(readFile(...fixturePath));
+      const fixture = JSON.parse(readFile(...FIXTURES_PATH, ...fixturePath));
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH});
 
       expect(getFixture({
@@ -89,7 +89,7 @@ describe('index', () => {
 
     it('Should use a custom reader', (index = '5') => {
       const fixturePath = [index, 'file.txt'];
-      const expectedFixture = readFile(index, 'expectedFixture.txt');
+      const expectedFixture = readFile(...FIXTURES_PATH, index, 'expectedFixture.txt');
       const reader = () => expectedFixture;
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader});
 
@@ -115,20 +115,30 @@ describe('index', () => {
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, failWhenNotFound: false});
       expect(getFixture('foo')).to.equal(undefined);
     });
+
+    it('Should throw because reading the fixture failed', (index = '6') => {
+      const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.JSON});
+
+      expect(() => {
+        getFixture(index, 'file.txt');
+      }).to.throw(Error, /^Unexpected token/u);
+    });
   });
 
   describe('#getFixtures', () => {
-    it('Should get fixtures with regular expression', (index = '6') => {
+    const FIXTURES_PATH = [__dirname, '..', 'test-fixtures', 'getFixtures'];
+
+    it('Should get fixtures with regular expression', (index = '1') => {
       const fixturePath = [index, 'file.txt'];
-      const fixture = readFile(...fixturePath);
+      const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
 
       expect(getFixtures(index, /^file/u)).to.eql([fixture]);
     });
 
-    it('Should get fixtures without regular expression', (index = '7') => {
+    it('Should get fixtures without regular expression', (index = '2') => {
       const fixturePath = [index, 'file.txt'];
-      const fixture = readFile(...fixturePath);
+      const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
 
       expect(getFixtures(...fixturePath)).to.eql([fixture]);
@@ -136,7 +146,7 @@ describe('index', () => {
   });
 
   function readFile(...pathComponents) {
-    const filePath = joinPath(...FIXTURES_PATH, ...pathComponents);
+    const filePath = joinPath(...pathComponents);
     return fs.readFileSync(filePath, 'utf8');
   }
 });
