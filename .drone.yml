@@ -12,7 +12,7 @@ steps:
   - name: audit
     image: node:12
     commands:
-      - npm audit --package-lock-only --audit-level=moderate
+      - npm audit --package-lock-only --production --audit-level=moderate
 
   - name: install
     image: node:12
@@ -56,6 +56,6 @@ name: npm_token
 data: ccugi9SLiTChs9y10jd/9Ul1lT/VbdqBtc1ce8SmbCkhMcBofJssY0LBfevzT3yGQLa4cm4bNTVuyVGWI7q4Ww==
 ---
 kind: signature
-hmac: 68d70108392bf45ebf9f401de81396e0d7af6493dc978e236485e2098b401d09
+hmac: c64157b478b468d343930b7c18681792e024d32f7a114e35cb7b3bbd2b7a8158
 
 ...
