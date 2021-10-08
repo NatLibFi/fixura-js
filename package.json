@@ -18,7 +18,7 @@
 		"url": "git@github.com:natlibfi/fixura-js.git"
 	},
 	"license": "LGPL-3.0+",
-	"version": "2.2.0",
+	"version": "2.2.1",
 	"main": "./dist/index.js",
 	"engines": {
 		"node": ">=14"
