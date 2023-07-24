@@ -52,7 +52,7 @@
 		"mocha": "^10.2.0",
 		"nodemon": "^3.0.1",
 		"nyc": "^15.1.0",
-		"@natlibfi/eslint-config-melinda-backend": "^2.0.2"
+		"@natlibfi/eslint-config-melinda-backend": "^3.0.0"
 	},
 	"eslintConfig": {
 		"extends": "@natlibfi/melinda-backend"
