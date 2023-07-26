@@ -18,7 +18,7 @@
 		"url": "git@github.com:natlibfi/fixura-js.git"
 	},
 	"license": "LGPL-3.0+",
-	"version": "3.0.0",
+	"version": "3.0.1-alpha.1",
 	"main": "dist/index.js",
 	"engines": {
 		"node": ">=18"
@@ -38,21 +38,21 @@
 		"watch:test": "cross-env DEBUG=1 NODE_ENV=test nodemon -w src --exec 'npm run test:dev'"
 	},
 	"dependencies": {
-		"@babel/register": "^7.21.0"
+		"@babel/register": "^7.22.5"
 	},
 	"devDependencies": {
-		"@babel/cli": "^7.21.0",
-		"@babel/core": "^7.21.0",
-		"@babel/eslint-parser": "^7.19.1",
-		"@babel/preset-env": "^7.20.2",
+		"@babel/cli": "^7.22.9",
+		"@babel/core": "^7.22.9",
+		"@babel/eslint-parser": "^7.22.9",
+		"@babel/preset-env": "^7.22.9",
 		"babel-plugin-istanbul": "^6.1.1",
 		"chai": "^4.3.7",
 		"cross-env": "^7.0.3",
-		"eslint": "^8.36.0",
+		"eslint": "^8.45.0",
 		"mocha": "^10.2.0",
-		"nodemon": "^2.0.21",
+		"nodemon": "^3.0.1",
 		"nyc": "^15.1.0",
-		"@natlibfi/eslint-config-melinda-backend": "^2.0.2"
+		"@natlibfi/eslint-config-melinda-backend": "^3.0.0"
 	},
 	"eslintConfig": {
 		"extends": "@natlibfi/melinda-backend"
