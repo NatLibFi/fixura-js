@@ -69,6 +69,6 @@ const foo = getFixture('foo', 'bar.txt'); // undefined
 
 ## License and copyright
 
-Copyright (c) 2019-2020, 2022-2024 **University Of Helsinki (The National Library Of Finland)**
+Copyright (c) 2019-2020, 2022-2025 **University Of Helsinki (The National Library Of Finland)**
 
 This project's source code is licensed under the terms of **MIT** or any later version.
