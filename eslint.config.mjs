@@ -2,7 +2,6 @@
 // - use imported ruleset for Melinda application frontend and
 // - lint all .js files that are inside directory src
 const configSrc = {
-  //melindaConfig,
   files: [
     "src/*"
   ],
