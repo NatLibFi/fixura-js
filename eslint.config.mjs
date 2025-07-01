@@ -1,6 +1,4 @@
 // Eslint configuration object for src
-// - use imported ruleset for Melinda application frontend and
-// - lint all .js files that are inside directory src
 const configSrc = {
   files: [
     "src/*"
