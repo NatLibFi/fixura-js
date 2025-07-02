@@ -13,7 +13,7 @@ describe('index', () => {
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixture} = fixturesFactory(...FIXTURES_PATH);
 
-      assert.deepEqual(getFixture(...fixturePath), fixture);
+      assert.deepStrictEqual(getFixture(...fixturePath), fixture);
     });
 
     it('Should get a fixture using the text reader', () => {
@@ -21,7 +21,7 @@ describe('index', () => {
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.TEXT});
 
-      assert.deepEqual(getFixture(...fixturePath), fixture);
+      assert.deepStrictEqual(getFixture(...fixturePath), fixture);
     });
 
     it('Should get a fixture using the json reader', () => {
@@ -29,7 +29,7 @@ describe('index', () => {
       const fixture = JSON.parse(readFile(...FIXTURES_PATH, ...fixturePath));
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.JSON});
 
-      assert.deepEqual(getFixture(...fixturePath), fixture);
+      assert.deepStrictEqual(getFixture(...fixturePath), fixture);
     });
 
     it('Should get a fixture using the stream reader', async () => {
@@ -47,7 +47,7 @@ describe('index', () => {
           .on('end', () => resolve(chunks.join('')));
       });
 
-      assert.deepEqual(fixture, expectedFixture);
+      assert.deepStrictEqual(fixture, expectedFixture);
     });
 
     it('Should use a fixture-specific reader', () => {
@@ -55,7 +55,7 @@ describe('index', () => {
       const fixture = JSON.parse(readFile(...FIXTURES_PATH, ...fixturePath));
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH});
 
-      assert.deepEqual(getFixture({
+      assert.deepStrictEqual(getFixture({
         components: fixturePath, reader: READERS.JSON
       }), fixture);
     });
@@ -66,7 +66,7 @@ describe('index', () => {
       const reader = () => expectedFixture;
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader});
 
-      assert.deepEqual(getFixture(...fixturePath), expectedFixture);
+      assert.deepStrictEqual(getFixture(...fixturePath), expectedFixture);
     });
 
     it('Should throw because of an unsupported reader type', () => {
@@ -100,14 +100,14 @@ describe('index', () => {
       const fixturePath = ['1', 'file.txt'];
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
-      assert.deepEqual(getFixtures('1', /^file/u), [fixture]);
+      assert.deepStrictEqual(getFixtures('1', /^file/u), [fixture]);
     });
 
     it('Should get fixtures without regular expression', () => {
       const fixturePath = ['2', 'file.txt'];
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
-      assert.deepEqual(getFixtures(...fixturePath), [fixture]);
+      assert.deepStrictEqual(getFixtures(...fixturePath), [fixture]);
     });
   });
 
