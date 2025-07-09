@@ -1,5 +1,5 @@
-import {join as joinPath} from 'path';
-import {readFileSync, readdirSync, createReadStream} from 'fs';
+import {createReadStream, readFileSync, readdirSync} from 'node:fs';
+import {join as joinPath} from 'node:path';
 
 export const READERS = {
   TEXT: 1,

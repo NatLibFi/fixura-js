@@ -7,23 +7,23 @@ const configSrc = {
     reportUnusedDisableDirectives: true,
   },
   rules: {
-    "no-console": "warn",
+    "array-callback-return": [
+      "error",
+      {
+        "checkForEach": true
+      }
+    ],
     "eqeqeq": ["error", "always"],
-    "no-const-assign": "error",
     "max-depth": ["warn", 4],
     "max-lines": ["warn", 500],
     "max-lines-per-function": ["warn", {"max": 100}],
+    "no-console": "warn",
+    "no-const-assign": "error",
     "no-else-return": ["error", {allowElseIf: false}],
     "no-plusplus": [
       "error",
       {
         "allowForLoopAfterthoughts": true
-      }
-    ],
-    "array-callback-return": [
-      "error",
-      {
-        "checkForEach": true
       }
     ],
     "no-unused-vars": [
@@ -32,7 +32,17 @@ const configSrc = {
         "argsIgnorePattern": "next"
       }
     ],
-    "no-warning-comments": "off"
+    "no-var": "error",
+    "no-warning-comments": "off",
+    "prefer-destructuring": ["error", {
+      "array": true,
+      "object": true
+    }],
+    "prefer-const": ["error", {
+      "destructuring": "any",
+      "ignoreReadBeforeAssign": false
+    }],
+    "radix": "error"
   }
 };
 
