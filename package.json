@@ -19,7 +19,7 @@
 	},
 	"license": "MIT",
 	"version": "3.0.14",
-	"main": "dist/index.js",
+	"main": "src/index.mjs",
 	"type": "module",
 	"engines": {
 		"node": ">=22"
