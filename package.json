@@ -20,9 +20,9 @@
 	"license": "MIT",
 	"version": "4.0.0-alpha.6",
 	"main": "./dist/index.js",
-	"module": "./src/index.mjs",
+	"module": "./dist/index.mjs",
 	"exports": {
-		"import": "./src/index.mjs",
+		"import": "./dist/index.mjs",
 		"require": "./dist/index.js"
 	},
 	"engines": {
@@ -32,7 +32,9 @@
 		"access": "public"
 	},
 	"scripts": {
-		"build": "esbuild src/index.mjs --sourcemap --platform=node --main-fields=module,main --outdir=dist --allow-overwrite",
+		"build": "npm run build:cjs && npm run build:mjs",
+		"build:cjs": "esbuild src/**/*.mjs --sourcemap --platform=node --main-fields=main --outdir=dist --allow-overwrite --analyze",
+		"build:mjs": "esbuild src/**/*.mjs --sourcemap --platform=node --main-fields=module --outdir=dist --allow-overwrite --out-extension:.js=.mjs --format=esm",
 		"lint": "eslint ./src",
 		"lint:dev": "eslint --fix ./src",
 		"test:base": "node --test --experimental-test-coverage --test-reporter=spec",
