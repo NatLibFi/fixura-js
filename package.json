@@ -19,8 +19,14 @@
 	},
 	"license": "MIT",
 	"version": "4.0.0-alpha.4",
+	"main": "./dist/index.js",
 	"module": "./src/index.mjs",
-	"type": "module",
+	"exports": {
+		"./foo": {
+			"import": "./src/index.mjs",
+			"require": "./dist/index.js"
+		}
+	},
 	"engines": {
 		"node": ">=22"
 	},
@@ -28,6 +34,7 @@
 		"access": "public"
 	},
 	"scripts": {
+		"build": "esbuild src/index.mjs --sourcemap --platform=node --main-fields=module,main --outdir=dist --allow-overwrite",
 		"lint": "eslint ./src",
 		"lint:dev": "eslint --fix ./src",
 		"test:base": "node --test --experimental-test-coverage --test-reporter=spec",
@@ -36,9 +43,9 @@
 		"dev": "npm run watch:test",
 		"dev:debug": "cross-env LOG_LEVEL=debug DEBUG=@natlibfi/* NODE_ENV=test npm run watch:test"
 	},
-	"dependencies": {},
 	"devDependencies": {
 		"cross-env": "^7.0.3",
+		"esbuild": "0.25.6",
 		"eslint": "^9.30.0"
 	}
 }
