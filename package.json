@@ -32,6 +32,7 @@
 		"access": "public"
 	},
 	"scripts": {
+		"prepare": "npm run build",
 		"build": "npm run build:cjs && npm run build:mjs",
 		"build:cjs": "esbuild src/**/*.mjs --sourcemap --platform=node --main-fields=main --outdir=dist --allow-overwrite --analyze",
 		"build:mjs": "esbuild src/**/*.mjs --sourcemap --platform=node --main-fields=module --outdir=dist --allow-overwrite --out-extension:.js=.mjs --format=esm",
