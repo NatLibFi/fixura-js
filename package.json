@@ -29,9 +29,7 @@
 	},
 	"scripts": {
 		"prepare": "npm run build",
-		"build": "npm run build:cjs && npm run build:mjs",
-		"build:cjs": "esbuild src/**/*.mjs --sourcemap --platform=node --main-fields=main --outdir=dist --allow-overwrite --analyze",
-		"build:mjs": "esbuild src/**/*.mjs --sourcemap --platform=node --main-fields=module --outdir=dist --allow-overwrite --format=esm",
+		"build": "esbuild src/**/*.js --sourcemap --platform=node --main-fields=main --outdir=dist --allow-overwrite --analyze",
 		"lint": "eslint ./src",
 		"lint:dev": "eslint --fix ./src",
 		"test:base": "node --test --experimental-test-coverage --test-reporter=spec './src/*.test.js' './src/**/*.test.js'",
