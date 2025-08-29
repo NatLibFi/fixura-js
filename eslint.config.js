@@ -10,7 +10,7 @@ const configSrc = {
     "array-callback-return": [
       "error",
       {
-        "checkForEach": true
+        "checkForEach": false
       }
     ],
     "eqeqeq": ["error", "always"],
