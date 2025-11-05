@@ -1,38 +1,39 @@
 import fs from 'fs';
 import {join as joinPath} from 'path';
-import {expect} from 'chai';
-import fixturesFactory, {READERS} from './index';
+import {describe, it} from 'node:test';
+import assert from 'node:assert';
+import fixturesFactory, {READERS} from './index.js';
 
 describe('index', () => {
   describe('#getFixture', () => {
-    const FIXTURES_PATH = [__dirname, '..', 'test-fixtures', 'getFixture'];
+    const FIXTURES_PATH = [import.meta.dirname, '..', 'test-fixtures', 'getFixture'];
 
-    it('Should get a fixture using the default reader', (index = '0') => {
-      const fixturePath = [index, 'file.txt'];
+    it('Should get a fixture using the default reader', () => {
+      const fixturePath = ['0', 'file.txt'];
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixture} = fixturesFactory(...FIXTURES_PATH);
 
-      expect(getFixture(...fixturePath)).to.equal(fixture);
+      assert.deepStrictEqual(getFixture(...fixturePath), fixture);
     });
 
-    it('Should get a fixture using the text reader', (index = '1') => {
-      const fixturePath = [index, 'file.txt'];
+    it('Should get a fixture using the text reader', () => {
+      const fixturePath = ['1', 'file.txt'];
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.TEXT});
 
-      expect(getFixture(...fixturePath)).to.equal(fixture);
+      assert.deepStrictEqual(getFixture(...fixturePath), fixture);
     });
 
-    it('Should get a fixture using the json reader', (index = '2') => {
-      const fixturePath = [index, 'file.json'];
+    it('Should get a fixture using the json reader', () => {
+      const fixturePath = ['2', 'file.json'];
       const fixture = JSON.parse(readFile(...FIXTURES_PATH, ...fixturePath));
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.JSON});
 
-      expect(getFixture(...fixturePath)).to.eql(fixture);
+      assert.deepStrictEqual(getFixture(...fixturePath), fixture);
     });
 
-    it('Should get a fixture using the stream reader', async (index = '3') => {
-      const fixturePath = [index, 'file.txt'];
+    it('Should get a fixture using the stream reader', async () => {
+      const fixturePath = ['3', 'file.txt'];
       const expectedFixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.STREAM});
 
@@ -42,78 +43,71 @@ describe('index', () => {
 
         stream
           .on('error', reject)
-          .on('data', chunk => chunks.push(chunk)) // eslint-disable-line functional/immutable-data
+          .on('data', chunk => chunks.push(chunk))
           .on('end', () => resolve(chunks.join('')));
       });
 
-      expect(fixture).to.equal(expectedFixture);
+      assert.deepStrictEqual(fixture, expectedFixture);
     });
 
-    it('Should use a fixture-specific reader', (index = '4') => {
-      const fixturePath = [index, 'file.json'];
+    it('Should use a fixture-specific reader', () => {
+      const fixturePath = ['4', 'file.json'];
       const fixture = JSON.parse(readFile(...FIXTURES_PATH, ...fixturePath));
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH});
 
-      expect(getFixture({
+      assert.deepStrictEqual(getFixture({
         components: fixturePath, reader: READERS.JSON
-      })).to.eql(fixture);
+      }), fixture);
     });
 
-    it('Should use a custom reader', (index = '5') => {
-      const fixturePath = [index, 'file.txt'];
-      const expectedFixture = readFile(...FIXTURES_PATH, index, 'expectedFixture.txt');
+    it('Should use a custom reader', () => {
+      const fixturePath = ['5', 'file.txt'];
+      const expectedFixture = readFile(...FIXTURES_PATH, '5', 'expectedFixture.txt');
       const reader = () => expectedFixture;
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader});
 
-      expect(getFixture(...fixturePath)).to.eql(expectedFixture);
+      assert.deepStrictEqual(getFixture(...fixturePath), expectedFixture);
     });
 
     it('Should throw because of an unsupported reader type', () => {
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: 'foo'});
-      expect(() => {
-        getFixture([]);
-      }).to.throw(Error, /^Unsupported reader type: foo$/u);
+      const error = new Error('Unsupported reader type: foo');
+      assert.throws(() => getFixture([]), error);
     });
 
     it('Should throw because the fixture could not be found', () => {
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH});
-
-      expect(() => {
-        getFixture('foo');
-      }).to.throw(Error, new RegExp(`^Couldn't retrieve test fixture ${joinPath(...FIXTURES_PATH, 'foo')}$`, 'u'));
+      const error = new Error(`Couldn't retrieve test fixture ${joinPath(...FIXTURES_PATH, 'foo')}`);
+      assert.throws(() => getFixture('foo'), error);
     });
 
     it('Should not throw when a fixture is not found because explicitly requested', () => {
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, failWhenNotFound: false});
-      expect(getFixture('foo')).to.equal(undefined);
+      assert.equal(getFixture('foo'), undefined);
     });
 
-    it('Should throw because reading the fixture failed', (index = '6') => {
+    it('Should throw because reading the fixture failed', () => {
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.JSON});
-
-      expect(() => {
-        getFixture(index, 'file.txt');
-      }).to.throw(Error, /^Unexpected token/u);
+      const error = new SyntaxError(`Unexpected token 'o', "foobar" is not valid JSON`);
+      assert.throws(() => getFixture('6', 'file.txt'), error);
     });
   });
 
   describe('#getFixtures', () => {
-    const FIXTURES_PATH = [__dirname, '..', 'test-fixtures', 'getFixtures'];
+    const FIXTURES_PATH = [import.meta.dirname, '..', 'test-fixtures', 'getFixtures'];
 
-    it('Should get fixtures with regular expression', (index = '1') => {
-      const fixturePath = [index, 'file.txt'];
+    it('Should get fixtures with regular expression', () => {
+      const fixturePath = ['1', 'file.txt'];
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
-
-      expect(getFixtures(index, /^file/u)).to.eql([fixture]);
+      assert.deepStrictEqual(getFixtures('1', /^file/u), [fixture]);
     });
 
-    it('Should get fixtures without regular expression', (index = '2') => {
-      const fixturePath = [index, 'file.txt'];
+    it('Should get fixtures without regular expression', () => {
+      const fixturePath = ['2', 'file.txt'];
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
-
-      expect(getFixtures(...fixturePath)).to.eql([fixture]);
+      assert.deepStrictEqual(getFixtures(...fixturePath), [fixture]);
     });
   });
 

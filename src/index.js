@@ -1,5 +1,5 @@
-import {join as joinPath} from 'path';
-import {readFileSync, readdirSync, createReadStream} from 'fs';
+import {createReadStream, readFileSync, readdirSync} from 'node:fs';
+import {join as joinPath} from 'node:path';
 
 export const READERS = {
   TEXT: 1,
@@ -61,7 +61,7 @@ export default function (...args) {
         return readCallback(filePath);
       } catch (err) {
         if (err.code && err.code === 'ENOENT') {
-          if (failWhenNotFound) { // eslint-disable-line functional/no-conditional-statements
+          if (failWhenNotFound) {
             throw new Error(`Couldn't retrieve test fixture ${filePath}`);
           }
 
