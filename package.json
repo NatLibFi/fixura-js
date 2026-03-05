@@ -38,8 +38,8 @@
 		"dev:debug": "cross-env LOG_LEVEL=debug DEBUG=@natlibfi/* NODE_ENV=test npm run watch:test"
 	},
 	"devDependencies": {
-		"cross-env": "^7.0.3",
-		"esbuild": "0.25.6",
-		"eslint": "^9.30.0"
+		"cross-env": "^10.1.0",
+		"esbuild": "^0.27.3",
+		"eslint": "^10.0.2"
 	}
 }
