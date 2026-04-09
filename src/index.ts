@@ -59,7 +59,7 @@ export default function (...args) {
     return filePath => {
       try {
         return readCallback(filePath);
-      } catch (error: any) {
+      } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
         if (error.code && error.code === 'ENOENT') {
           if (failWhenNotFound) {
             throw new Error(`Couldn't retrieve test fixture ${filePath}`);

@@ -39,7 +39,7 @@ describe('index', () => {
 
       const stream = getFixture(...fixturePath);
       const fixture = await new Promise((resolve, reject) => {
-        const chunks: any[] = [];
+        const chunks: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
 
         stream
           .on('error', reject)
