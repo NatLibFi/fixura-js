@@ -47,7 +47,7 @@ describe('index', () => {
             .on('data', (chunk: string) => chunks.push(chunk))
             .on('end', () => resolve(chunks.join('')))
             .on('error', (error: Error) => {
-              console.log(error);
+              console.log(error); // eslint-disable-line no-console
               return reject;
             });
         }
@@ -67,9 +67,9 @@ describe('index', () => {
     });
 
     it('Should throw because of an unsupported reader type', () => {
-      const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: 'foo'});
-      const error = new Error('Unsupported reader type: foo');
-      assert.throws(() => getFixture([]), error);
+      const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: 0});
+      const expectedError = new Error('Unsupported reader type: 0');
+      assert.throws(() => getFixture([]), expectedError);
     });
 
     it('Should throw because the fixture could not be found', () => {

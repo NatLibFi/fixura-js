@@ -5,7 +5,7 @@ import type {Readable} from 'node:stream';
 type readerResult = string | object | Readable | undefined | void;
 type readerArgs = string | string[] | object | RegExp | fixuraOpts
 interface fixuraOpts {
-  root?: any
+  root?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   components?: (string | RegExp)[],
   reader: number
   failWhenNotFound?: boolean
@@ -40,8 +40,8 @@ export default function (...args): Fixura {
 
   function getFixture(...args: readerArgs[]): readerResult {
     const {components = [], reader: readerType} = parseArgs(args);
+    const read = createReader(readerType);
     if (components.every(comp => typeof comp === 'string')) {
-      const read = createReader(readerType);
       const filePath = joinPath(...root, ...components);
       return read(filePath);
     }
@@ -72,8 +72,8 @@ export default function (...args): Fixura {
     return {reader: defaultReader, components: args};
   }
 
-  function createReader(context: number) {
-    const readCallback = generateReader();
+  function createReader(context: number): (filePath: string) => readerResult { // eslint-disable-line no-unused-vars
+    const readCallback = generateReader(context);
     return filePath => {
       try {
         return readCallback(filePath);
@@ -90,7 +90,7 @@ export default function (...args): Fixura {
       }
     };
 
-    function generateReader() {
+    function generateReader(context: number) {
       if (context === READERS.TEXT) {
         return readText;
       }
