@@ -49,19 +49,6 @@ getFixture({components: ['foo', 'bar.txt'], reader: READERS.JSON})
 - **TEXT**: Returns the fixture as test (**Default**)
 - **JSON**: Parses the fixture as JSON and returns an object
 - **STREAM**: Returns a read stream to the fixture
-### Custom reader
-Custom readers can be used:
-```js
-const {getFixture} = fixturesFactory({
-    rootPath: [import.meta.dirname, '..', 'test-fixtures'],
-    reader: filePath => doSomething()
-});
-```
-or
-```js
-getFixture({components: ['foo', 'bar.txt'], reader: filePath => doSomething()});
-```
-The reader function takes one string argument which is an absolute path to the fixture file. The function can return any value which the test case can then use as appropriate.
 
 ## failWhenNotFound
 Set **failWhenNotFound** to false to return undefined and to prevent throwing if a fixture file is not found:
