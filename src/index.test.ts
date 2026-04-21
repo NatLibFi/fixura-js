@@ -1,9 +1,8 @@
-import fs from 'node:fs';
+import fs, {ReadStream} from 'node:fs';
 import {join as joinPath} from 'node:path';
 import {describe, it} from 'node:test';
 import assert from 'node:assert';
 import fixturesFactory, {READERS} from './index.ts';
-import {Readable} from 'node:stream';
 
 describe('index', () => {
   describe('#getFixture', () => {
@@ -40,9 +39,10 @@ describe('index', () => {
 
       const stream = getFixture(...fixturePath);
 
+
       const fixture = await new Promise((resolve, reject) => {
         const chunks: string[] = [];
-        if (stream instanceof Readable) {
+        if (stream && stream instanceof ReadStream) {
           stream
             .on('data', (chunk: string) => chunks.push(chunk))
             .on('end', () => resolve(chunks.join('')))
@@ -69,7 +69,7 @@ describe('index', () => {
     it('Should throw because of an unsupported reader type', () => {
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: 0});
       const expectedError = new Error('Unsupported reader type: 0');
-      assert.throws(() => getFixture([]), expectedError);
+      assert.throws(() => getFixture(), expectedError);
     });
 
     it('Should throw because the fixture could not be found', () => {
@@ -99,7 +99,7 @@ describe('index', () => {
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
 
-      assert.deepStrictEqual(getFixtures('1', /^file/u), [fixture]);
+      assert.deepStrictEqual(getFixtures(/^file/u, '1'), [fixture]);
     });
 
     it('Should get fixtures without regular expression', () => {

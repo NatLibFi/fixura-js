@@ -13,21 +13,13 @@ Loading test fixtures is as easy as ABC with Fixura.
 ## ES modules
 ```js
 import fixturesFactory from '@natlibfi/fixura';
-const {getFixture} = fixturesFactory(import.meta.dirname, '...', 'test-fixtures']);
+const {getFixture} = fixturesFactory([import.meta.dirname, '...', 'test-fixtures']);
 const fixture = getFixture('foo.txt');
 
 // Get multiple files using regular expressions
 const fixtures = getFixtures(/.+\.txt/u);
 ```
-## Node.js require
-```js
-const {default: fixturesFactory} from '@natlibfi/fixura';
-const {getFixture} = fixturesFactory(import.meta.dirname, '...', 'test-fixtures');
-const fixture = getFixture('foo.txt');
 
-// Get multiple files using regular expressions
-const fixtures = getFixtures(/.+\.txt/u);
-```
 # Configuration
 ## Readers
 The readers are exported as `READERS`:
@@ -52,7 +44,7 @@ getFixture({components: ['foo', 'bar.txt'], reader: READERS.JSON})
 
 ## failWhenNotFound
 Set **failWhenNotFound** to false to return undefined and to prevent throwing if a fixture file is not found:
-```
+```js
 const {getFixture} = fixturesFactory({
     rootPath: [import.meta.dirname, '..', 'test-fixtures'],
     failWhenNotFound: false
