@@ -8,19 +8,20 @@ export const READERS = {
   STREAM: 3
 };
 
-export default function (...args: [{root: string[], reader?: number, failWhenNotFound?: boolean}] | string[]) {
+export function fixtureFactory(...args: ({root?: string[], reader?: number, failWhenNotFound?: boolean} | string)[]) {
   const defaultOptions = {
     reader: READERS.TEXT,
     failWhenNotFound: true
   };
 
-  const {root, reader: defaultReader, failWhenNotFound = true} = parseDefaultArgs(args);
+  const {root = [], reader: defaultReader, failWhenNotFound = true} = parseDefaultArgs(args);
   return {getFixture, getFixtures};
 
   //MARK: parseDefaultArgs
-  function parseDefaultArgs(args: [{root: string[], reader?: number, failWhenNotFound?: boolean}] | string[]):
-    ({root: string[], reader: number, failWhenNotFound?: boolean}) {
+  function parseDefaultArgs(args: ({root?: string[], reader?: number, failWhenNotFound?: boolean} | string)[]):
+    ({root?: string[], reader: number, failWhenNotFound?: boolean}) {
     const [firstArg] = args;
+
     if (args.length === 1 && typeof firstArg === 'object' && Array.isArray(firstArg) === false) {
       return {...defaultOptions, ...firstArg};
     }
