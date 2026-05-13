@@ -8,7 +8,7 @@ export const READERS = {
   STREAM: 3
 };
 
-export function fixtureFactory(...args: ({root?: string[], reader?: number, failWhenNotFound?: boolean} | string)[]) {
+export default function fixtureFactory(...args: ({root?: string[], reader?: number, failWhenNotFound?: boolean} | string)[]) {
   const defaultOptions = {
     reader: READERS.TEXT,
     failWhenNotFound: true
