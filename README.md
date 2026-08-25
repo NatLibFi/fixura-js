@@ -92,7 +92,7 @@ CAUTION: `failWhenNotFound` does not apply to streams. A missing file returns a 
 
 ## failWhenNotFound
 
-Set `failWhenNotFound` to `false` to prevent the function from throwing when a fixture file is not found. The function returns `undefined` instead:
+Set `failWhenNotFound` to `false` to prevent the function from throwing an error when a fixture file is not found. The function returns `undefined` instead:
 
 ```js
 const {getFixture} = fixturesFactory({
