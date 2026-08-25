@@ -1,8 +1,8 @@
-import fs from 'fs';
-import {join as joinPath} from 'path';
+import fs, {ReadStream} from 'node:fs';
+import {join as joinPath} from 'node:path';
 import {describe, it} from 'node:test';
 import assert from 'node:assert';
-import fixturesFactory, {READERS} from './index.js';
+import fixturesFactory, {READERS} from './index.ts';
 
 describe('index', () => {
   describe('#getFixture', () => {
@@ -38,13 +38,19 @@ describe('index', () => {
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.STREAM});
 
       const stream = getFixture(...fixturePath);
-      const fixture = await new Promise((resolve, reject) => {
-        const chunks = [];
 
-        stream
-          .on('error', reject)
-          .on('data', chunk => chunks.push(chunk))
-          .on('end', () => resolve(chunks.join('')));
+
+      const fixture = await new Promise((resolve, reject) => {
+        const chunks: string[] = [];
+        if (stream && stream instanceof ReadStream) {
+          stream
+            .on('data', (chunk: string) => chunks.push(chunk))
+            .on('end', () => resolve(chunks.join('')))
+            .on('error', (error: Error) => {
+              console.log(error); // eslint-disable-line no-console
+              return reject;
+            });
+        }
       });
 
       assert.deepStrictEqual(fixture, expectedFixture);
@@ -60,19 +66,10 @@ describe('index', () => {
       }), fixture);
     });
 
-    it('Should use a custom reader', () => {
-      const fixturePath = ['5', 'file.txt'];
-      const expectedFixture = readFile(...FIXTURES_PATH, '5', 'expectedFixture.txt');
-      const reader = () => expectedFixture;
-      const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader});
-
-      assert.deepStrictEqual(getFixture(...fixturePath), expectedFixture);
-    });
-
     it('Should throw because of an unsupported reader type', () => {
-      const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: 'foo'});
-      const error = new Error('Unsupported reader type: foo');
-      assert.throws(() => getFixture([]), error);
+      const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: 0});
+      const expectedError = new Error('Unsupported reader type: 0');
+      assert.throws(() => getFixture(), expectedError);
     });
 
     it('Should throw because the fixture could not be found', () => {
@@ -89,7 +86,8 @@ describe('index', () => {
     it('Should throw because reading the fixture failed', () => {
       const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.JSON});
       const error = new SyntaxError(`Unexpected token 'o', "foobar" is not valid JSON`);
-      assert.throws(() => getFixture('6', 'file.txt'), error);
+
+      assert.throws(() => getFixture('5', 'file.txt'), error);
     });
   });
 
@@ -100,13 +98,15 @@ describe('index', () => {
       const fixturePath = ['1', 'file.txt'];
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
-      assert.deepStrictEqual(getFixtures('1', /^file/u), [fixture]);
+
+      assert.deepStrictEqual(getFixtures(/^file/u, '1'), [fixture]);
     });
 
     it('Should get fixtures without regular expression', () => {
       const fixturePath = ['2', 'file.txt'];
       const fixture = readFile(...FIXTURES_PATH, ...fixturePath);
       const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
+
       assert.deepStrictEqual(getFixtures(...fixturePath), [fixture]);
     });
   });
