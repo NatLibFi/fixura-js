@@ -10,26 +10,34 @@ export const READERS: {readonly TEXT: 1, readonly JSON: 2, readonly STREAM: 3} =
 
 export type Reader = (typeof READERS)[keyof typeof READERS];
 
-type FixtureType<R extends Reader> =
-  R extends typeof READERS.TEXT ? string :
-  R extends typeof READERS.JSON ? unknown :
-  R extends typeof READERS.STREAM ? ReadStream :
-  never;
+interface FixtureTypes {
+  1: string; // READERS.TEXT
+  2: unknown; // READERS.JSON
+  3: ReadStream; // READERS.STREAM
+}
+
+type FixtureType<R extends Reader> = FixtureTypes[R];
 
 interface FixtureOptions<R extends Reader> {components?: string[], reader?: R;}
 
+type FixtureSelector<R extends Reader> = FixtureOptions<R> | RegExp | string;
+
+interface FactoryOptions<DR extends Reader> {root?: string[], reader?: DR, failWhenNotFound?: boolean;}
+
+type FixtureReader = (_filePath: string) => string | unknown | ReadStream;
+
+type FixtureReaderFn<R extends Reader = Reader> = (_filePath: string) => FixtureType<R> | undefined;
+
 export interface Fixura<DR extends Reader = typeof READERS.TEXT> {
   getFixture: <R extends Reader = DR>(
-    _first?: FixtureOptions<R> | RegExp | string,
+    _first?: FixtureSelector<R>,
     ..._rest: string[]
   ) => FixtureType<R> | undefined;
   getFixtures: <R extends Reader = DR>(
-    _first?: FixtureOptions<R> | RegExp | string,
+    _first?: FixtureSelector<R>,
     ..._rest: string[]
   ) => (FixtureType<R> | undefined)[];
 }
-
-type FixtureArg = FixtureOptions<Reader> | RegExp | string | undefined;
 
 const DEFAULT_OPTIONS = {
   reader: READERS.TEXT,
@@ -37,14 +45,18 @@ const DEFAULT_OPTIONS = {
 };
 
 export default function fixtureFactory<DR extends Reader = typeof READERS.TEXT>(
-  ...args: ({root?: string[], reader?: DR, failWhenNotFound?: boolean} | string)[]
+  _options: FactoryOptions<DR>
+): Fixura<DR>;
+export default function fixtureFactory(..._roots: string[]): Fixura;
+export default function fixtureFactory<DR extends Reader = typeof READERS.TEXT>(
+  ...args: (FactoryOptions<DR> | string)[]
 ): Fixura<DR> {
   const {root = [], reader: defaultReader, failWhenNotFound = true} = parseDefaultArgs(args);
   return {getFixture, getFixtures};
 
   //MARK: parseDefaultArgs
-  function parseDefaultArgs(args: ({root?: string[], reader?: DR, failWhenNotFound?: boolean} | string)[]):
-    ({root?: string[], reader: Reader, failWhenNotFound?: boolean}) {
+  function parseDefaultArgs(args: (FactoryOptions<DR> | string)[]):
+    ({root?: string[], reader: Reader, failWhenNotFound: boolean}) {
     const [firstArg] = args;
 
     if (args.length === 1 && typeof firstArg === 'object' && Array.isArray(firstArg) === false) {
@@ -60,7 +72,7 @@ export default function fixtureFactory<DR extends Reader = typeof READERS.TEXT>(
 
   //MARK: getFixture
   function getFixture<R extends Reader = DR>(
-    first?: FixtureOptions<R> | RegExp | string,
+    first?: FixtureSelector<R>,
     ...rest: string[]
   ): FixtureType<R> | undefined {
     const {components = [], reader: readerType} = parseArgs([first, ...rest], defaultReader);
@@ -70,7 +82,7 @@ export default function fixtureFactory<DR extends Reader = typeof READERS.TEXT>(
 
   //MARK: getFixtures
   function getFixtures<R extends Reader = DR>(
-    first?: FixtureOptions<R> | RegExp | string,
+    first?: FixtureSelector<R>,
     ...rest: string[]
   ): (FixtureType<R> | undefined)[] {
     const {components = [], filter, reader: readerType} = parseArgs([first, ...rest], defaultReader);
@@ -91,7 +103,7 @@ export default function fixtureFactory<DR extends Reader = typeof READERS.TEXT>(
 
 // MARK: parseArgs
 function parseArgs(
-  args: FixtureArg[],
+  args: (FixtureSelector<Reader> | undefined)[],
   defaultReader: Reader
 ): ({reader: Reader, filter?: RegExp, components?: string[]}) {
   const [firstArg, ...rest] = args;
@@ -121,8 +133,7 @@ function isEnoent(error: unknown): boolean {
 
 //MARK: createReader
 function createReader<R extends Reader = Reader>(context: number, failWhenNotFound: boolean):
-  // eslint-disable-next-line no-unused-vars
-  ((filePath: string) => FixtureType<R> | undefined) {
+  FixtureReaderFn<R> {
   if (isReader(context) === false) {
     throw new Error(`Unsupported reader type: ${context}`);
   }
@@ -148,9 +159,7 @@ function createReader<R extends Reader = Reader>(context: number, failWhenNotFou
 }
 
 //MARK: generateReader
-function generateReader(context: Reader):
-  // eslint-disable-next-line no-unused-vars
-  ((filePath: string) => string | unknown | ReadStream) {
+function generateReader(context: Reader): FixtureReader {
   if (context === READERS.TEXT) {
     return readText;
   }
