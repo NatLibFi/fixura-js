@@ -2,7 +2,7 @@ import fs, {ReadStream} from 'node:fs';
 import {join as joinPath} from 'node:path';
 import {describe, it} from 'node:test';
 import assert from 'node:assert';
-import fixturesFactory, {READERS} from './index.ts';
+import fixturesFactory, {READERS, type Reader} from './index.ts';
 
 describe('index', () => {
   describe('#getFixture', () => {
@@ -67,7 +67,7 @@ describe('index', () => {
     });
 
     it('Should throw because of an unsupported reader type', () => {
-      const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: 0});
+      const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: 0 as unknown as Reader});
       const expectedError = new Error('Unsupported reader type: 0');
       assert.throws(() => getFixture(), expectedError);
     });
@@ -88,6 +88,42 @@ describe('index', () => {
       const error = new SyntaxError(`Unexpected token 'o', "foobar" is not valid JSON`);
 
       assert.throws(() => getFixture('5', 'file.txt'), error);
+    });
+
+    it('Should type a fixture as string without a cast using the default reader', () => {
+      const fixturePath = ['0', 'file.txt'];
+      const {getFixture} = fixturesFactory(...FIXTURES_PATH);
+
+      const fixture: string | undefined = getFixture({components: fixturePath});
+
+      assert.strictEqual(fixture, readFile(...FIXTURES_PATH, ...fixturePath));
+    });
+
+    it('Should type a fixture as unknown without a cast using the json reader', () => {
+      const fixturePath = ['4', 'file.json'];
+      const {getFixture} = fixturesFactory(...FIXTURES_PATH);
+
+      const fixture: unknown = getFixture({components: fixturePath, reader: READERS.JSON});
+
+      assert.deepStrictEqual(fixture, JSON.parse(readFile(...FIXTURES_PATH, ...fixturePath)));
+    });
+
+    it('Should type a fixture as ReadStream without a cast using the stream reader', () => {
+      const fixturePath = ['3', 'file.txt'];
+      const {getFixture} = fixturesFactory({root: FIXTURES_PATH, reader: READERS.STREAM});
+
+      const stream: ReadStream | undefined = getFixture({components: fixturePath});
+
+      assert.ok(stream instanceof ReadStream);
+      stream.close();
+    });
+
+    it('Should type fixtures as string[] without a cast using the default reader', () => {
+      const {getFixtures} = fixturesFactory(...FIXTURES_PATH);
+
+      const fixtures: (string | undefined)[] = getFixtures({components: ['1', 'file.txt']});
+
+      assert.deepStrictEqual(fixtures, [readFile(...FIXTURES_PATH, '1', 'file.txt')]);
     });
   });
 
