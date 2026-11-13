@@ -43,7 +43,7 @@ export default defineConfig(
         "no-unused-vars": [
           "error",
           {
-            "argsIgnorePattern": "next"
+            "argsIgnorePattern": "^(next|_)"
           }
         ],
         "no-var": "error",
