@@ -48,7 +48,7 @@ The function returns `{getFixture, getFixtures}`.
 
 Loads a single fixture. The path uses one or more components joined to the root. A per-call reader can override the factory default in the object form.
 
-The function returns a `string` (TEXT), an `object` (JSON), or a `ReadStream` (STREAM). See [Readers](#readers).
+The function returns a `string` (TEXT), an `unknown` (JSON), or a `ReadStream` (STREAM). When the fixture is not found and `failWhenNotFound` is `false`, it returns `undefined`. See [Readers](#readers).
 
 ## getFixtures(regex, ...dirComponents) | getFixtures(components, ...components)
 
@@ -85,7 +85,7 @@ getFixture({components: ['foo', 'bar.json'], reader: READERS.JSON})
 ### Built-in readers
 
 - **TEXT**: Returns the fixture as text. This is the default reader.
-- **JSON**: Parses the fixture as JSON. Returns an object.
+- **JSON**: Parses the fixture as JSON. Returns `unknown` — the parsed value. Narrow or assert the type before using it.
 - **STREAM**: Returns a read stream to the fixture. The stream emits `error` asynchronously. Always attach an `error` listener.
 
 CAUTION: `failWhenNotFound` does not apply to streams. A missing file returns a `ReadStream` that emits `ENOENT` as an `error` event. This is an uncaught exception if no listener exists.
@@ -104,6 +104,26 @@ const foo = getFixture('foo', 'bar.txt'); // undefined
 ```
 
 Only `ENOENT` (file not found) is suppressed. Other read errors, such as invalid JSON, always throw. Streams are not covered.
+
+## TypeScript
+
+The package is written in TypeScript and ships its type declarations. Beyond `READERS`, it exports the `Reader` type and the `Fixura<DR>` interface describing the returned `{getFixture, getFixtures}` object.
+
+The factory is generic over its default reader, so the return types of `getFixture` and `getFixtures` follow the reader you configure:
+
+```ts
+import fixturesFactory, {READERS} from '@natlibfi/fixura';
+
+const {getFixture} = fixturesFactory({
+    root: [import.meta.dirname, '..', 'test-fixtures'],
+    reader: READERS.JSON,
+});
+
+const data = getFixture('foo', 'bar.json'); // unknown
+```
+
+Per-call reader overrides are typed as well:
+`getFixture({components: ['foo.txt'], reader: READERS.TEXT})` returns `string | undefined`.
 
 ## License and copyright
 
